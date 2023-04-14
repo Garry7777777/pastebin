@@ -4,7 +4,10 @@ import com.skypro.pastebin.dto.PastebinDTO;
 import com.skypro.pastebin.enums.Expiration;
 import com.skypro.pastebin.enums.Exposure;
 import com.skypro.pastebin.service.PastebinService;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -13,19 +16,24 @@ import java.util.List;
 @RequestMapping
 public class PastebinController {
 
+    @Value("${starting.pastebin.uri}")
+    private  String uri;
+
     @Autowired
     private PastebinService pastebinService;
 
     @GetMapping("/{id}")
-    public PastebinDTO getByID(@PathVariable String id)   {
-        return pastebinService.getByID(id);
+    public PastebinDTO getByHash(@PathVariable String id)   {
+        return pastebinService.getByHash(id);
     }
 
     @PostMapping
-    public ResponseEntity<String> createPastebin(@RequestParam(name = "Expiration") Expiration expiration,
+    public ResponseEntity<?> createPastebin(@RequestParam(name = "Expiration") Expiration expiration,
                                                  @RequestParam(name = "Exposure") Exposure exposure,
-                                                 @RequestBody PastebinDTO pastebinDTO) {
-        return ResponseEntity.ok("http://localhost:8080/" + pastebinService.createPastebin(expiration, exposure, pastebinDTO) );
+                                                 @RequestBody PastebinDTO pastebinDTO) throws JSONException {
+
+        return ResponseEntity.ok().body(new JSONObject()
+                .put("uri",uri + pastebinService.createPastebin(expiration, exposure, pastebinDTO)).toString());
     }
 
     @GetMapping("/search")

@@ -3,7 +3,8 @@
 -- changeset garry:1
 create table pastebin
 (
-    id       varchar(255) not null primary key,
+    id       bigserial not null primary key ,
+    hash     varchar(255),
     body     varchar(255),
     created  timestamp,
     expired  timestamp,
