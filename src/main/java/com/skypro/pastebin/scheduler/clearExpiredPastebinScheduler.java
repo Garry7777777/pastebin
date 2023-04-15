@@ -15,11 +15,11 @@ public class clearExpiredPastebinScheduler {
     @Autowired
     private PastebinRepository pastebinRepository;
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(cron = "${interval-in-cron}" )
     @Transactional
     public void clearTokens() {
         log.info("произведена очистка устаревших записей");
-        pastebinRepository.deleteAllByExpiredIsBefore(Instant.now());
+        pastebinRepository.deleteAllByExpiredIsAfter(Instant.now());
     }
 
 }

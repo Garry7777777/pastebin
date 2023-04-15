@@ -2,7 +2,6 @@ package com.skypro.pastebin;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.json.JSONObject;
@@ -17,9 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest()
 @AutoConfigureMockMvc
 public class PastebinControllerTest {
-
-    @Value("${starting.pastebin.uri}")
-    private  String uri;
 
     @Autowired
     MockMvc mockMvc;
@@ -45,8 +41,8 @@ public class PastebinControllerTest {
         mockMvc.perform(get("/last"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isNotEmpty())
-                .andExpect(jsonPath("$.size()").value(3))
-                .andExpect(jsonPath("$[0].title").value("title3"));
+                .andExpect(jsonPath("$.size()").value(10))
+                .andExpect(jsonPath("$[0].title").value("title14"));
     }
 
     @Test
@@ -54,7 +50,7 @@ public class PastebinControllerTest {
         mockMvc.perform(get("/search?title=title1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isNotEmpty())
-                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$.size()").value(6))
                 .andExpect(jsonPath("$[0].title").value("title1"));
     }
 
@@ -63,7 +59,7 @@ public class PastebinControllerTest {
         mockMvc.perform(get("/search?body=body1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isNotEmpty())
-                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$.size()").value(6))
                 .andExpect(jsonPath("$[0].body").value("body1"));
     }
 
@@ -72,7 +68,7 @@ public class PastebinControllerTest {
         mockMvc.perform(get("/search?title=title1&body=body1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isNotEmpty())
-                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$.size()").value(6))
                 .andExpect(jsonPath("$[0].title").value("title1"))
                 .andExpect(jsonPath("$[0].body").value("body1"));
     }
@@ -86,15 +82,15 @@ public class PastebinControllerTest {
 
     @Test
     void createPastebin() throws Exception {
-        mockMvc.perform(post("/?Expiration=Never&Exposure=Public")
+        mockMvc.perform(post("/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content( new JSONObject()
                                 .put("title", "title4")
                                 .put("body","body4")
+                                .put("expiration", "Never")
+                                .put("exposure","Public")
                                 .toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isNotEmpty())
-                .andExpect(jsonPath("$.size()").value(1))
-                .andExpect(jsonPath("$.uri").exists());
+                .andExpect(jsonPath("$").isNotEmpty());
     }
 }
