@@ -11,8 +11,8 @@ import java.util.Optional;
 @Repository
 public interface PastebinRepository extends JpaRepository<Pastebin, String> {
 
-    void deleteAllByExpiredIsBefore(Instant instant);
-    List<Pastebin> findAllByBodyContainingOrTitleContaining(String body,String title);
-    List<Pastebin> findTop10ByExposureOrderByCreatedDesc(Exposure exposure);
-    Optional<Pastebin> findByHash(String hash);
+    void deleteAllByExpiredIsAfter(Instant instant);
+    List<Pastebin> findAllByExposureAndExpiredIsAfterAndBodyContainingOrExposureAndExpiredIsAfterAndTitleContaining(Exposure exposure1,Instant instant1,String body,Exposure exposure2,Instant instant2, String title);
+    List<Pastebin> findTop10ByExposureAndExpiredIsAfterOrderByCreatedDesc(Exposure exposure,Instant instant);
+    Optional<Pastebin> findByHashAndExpiredIsAfter(String hash, Instant instant);
 }
