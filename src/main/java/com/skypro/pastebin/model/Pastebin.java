@@ -23,9 +23,7 @@ import java.time.Instant;
 @NoArgsConstructor
 public class Pastebin {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String hash = RandomStringUtils.randomAlphanumeric(8);
+    private String id = RandomStringUtils.randomAlphanumeric(8);
     private String title;
     private String body;
     private Exposure exposure;

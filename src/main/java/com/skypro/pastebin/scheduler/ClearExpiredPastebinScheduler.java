@@ -10,7 +10,7 @@ import java.time.Instant;
 
 @Slf4j
 @Component
-public class clearExpiredPastebinScheduler {
+public class ClearExpiredPastebinScheduler {
 
     @Autowired
     private PastebinRepository pastebinRepository;

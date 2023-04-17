@@ -6,9 +6,11 @@ import com.skypro.pastebin.enums.Exposure;
 import com.skypro.pastebin.exception.PastebinNotFoundException;
 import com.skypro.pastebin.repository.PastebinRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.List;
+import static com.skypro.pastebin.repository.specification.PastebinSpecifications.*;
 
 @Service
 public class PastebinService {
@@ -17,17 +19,24 @@ public class PastebinService {
     private PastebinRepository pastebinRepository;
 
     public String createPastebin(CreatePastebinDTO createPastebinDTO) {
-        return pastebinRepository.save(createPastebinDTO.toPastebin()).getHash();
+        var pastebin = createPastebinDTO.toPastebin();
+        pastebinRepository.save(pastebin);
+        return pastebin.getId();
     }
 
-    public PastebinDTO getByHash(String hash)  {
-        return pastebinRepository.findByHashAndExpiredIsAfter(hash, Instant.now())
+    public PastebinDTO getById(String id)  {
+        return pastebinRepository.findByIdAndExpiredIsAfter(id, Instant.now())
                         .orElseThrow(PastebinNotFoundException::new).toDTO();
     }
 
     public List<PastebinDTO> findInPastebin(String title,String body) {
-        return  pastebinRepository.findAllByExposureAndExpiredIsAfterAndBodyContainingOrExposureAndExpiredIsAfterAndTitleContaining
-                        (Exposure.Public,Instant.now(),body,Exposure.Public,Instant.now(),title).stream().map(PastebinDTO::toDTO).toList();
+        return pastebinRepository.findAll(Specification.where(
+                      byExposure(Exposure.Public))
+                .and( byExpired(Instant.now()))
+                .and( byBody(body).and( byTitle(title))))
+                .stream().map(PastebinDTO::toDTO).toList();
+//        return  pastebinRepository.findTextInBodyAndTitle(body,title)
+//                .stream().map(PastebinDTO::toDTO).toList();
     }
 
     public List<PastebinDTO> getLastPublic() {

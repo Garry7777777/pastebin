@@ -18,10 +18,9 @@ public class PastebinController {
     @Autowired
     private PastebinService pastebinService;
 
-
     @GetMapping("/{id}")
-    public PastebinDTO getByHash(@PathVariable String id)   {
-        return pastebinService.getByHash(id);
+    public PastebinDTO getByID(@PathVariable String id)   {
+        return pastebinService.getById(id);
     }
 
 
